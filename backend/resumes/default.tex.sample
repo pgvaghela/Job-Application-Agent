@@ -1,0 +1,314 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,10pt]{article}
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}dz
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+% \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+%   \textbf{\href{http://sourabhbajaj.com/}{\Large Sourabh Bajaj}} & Email : \href{mailto:sourabh@sourabhbajaj.com}{sourabh@sourabhbajaj.com}\\
+%   \href{http://sourabhbajaj.com/}{http://www.sourabhbajaj.com} & Mobile : +1-123-456-7890 \\
+% \end{tabular*}
+
+\begin{center}
+    \textbf{\Huge \scshape Priyanshsinh Vaghela} \\ \vspace{1pt}
+    \small Phone: (208)-366-9658 $|$ \href{mailto:pgvaghela20@gmail.com}{\underline{Email: pgvaghela20@gmail.com}} $|$ 
+    \href{https://github.com/pgvaghela}{\underline{github.com/pgvaghela}} $|$ 
+    \href{https://www.linkedin.com/in/priyanshvaghela/}{\underline{linkedin.com/priyanshvaghela}} \\
+    \small No sponsorship required (Green Card)
+\end{center}
+
+
+
+%-----------EDUCATION-----------a
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {University of Arizona}{Tucson, AZ}
+      {B.S. in Computer Science, Minors: Entrepreneurship \& Innovation, Info Sci \& Tech}{Aug. 2022 -- May 2026}
+      \resumeItemListStart
+      \resumeItem{Relevant Courses: Object-Oriented Programming, Systems Programming, Data Structures, Algorithms, Machine Learning}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%-----------PROGRAMMING SKILLS-----------
+  \vspace{-18pt}        % <-- adjust this value until the gap disappears
+
+\section{Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item
+     \textbf{Programming Languages}{: Java, Python, TypeScript, JavaScript, C, C\# (.NET), C++, Swift, HTML/CSS, R} \\
+     \textbf{Frameworks \& Libraries}{: Spring Boot, ASP.NET Core, FastAPI, React, Angular, SwiftUI, TensorFlow, PyTorch} \\
+     \textbf{Data \& ML Tools}{: SQL (PostgreSQL, MySQL), pandas, NumPy, scikit-learn, Airflow (ETL), Tableau, Model evaluation, feature engineering, supervised learning, n8n (workflow automation)} \\
+     \textbf{Cloud \& DevOps}{: AWS (EC2, RDS), Azure DevOps, Docker, Kubernetes, GitHub Actions, Git, Linux/Unix} \\
+     \textbf{Testing \& CI/CD}{: Unit Testing (JUnit, PyTest), Integration Testing, Postman, CI/CD (GitHub Actions, Azure Pipelines)} \\
+     \textbf{Methodologies \& Design}{: Agile/Scrum, SDLC, RESTful API design, design patterns} \\
+     
+    }
+\end{itemize}
+
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+      \resumeSubheading
+      {AI/Data Analyst Intern \textbar{} {\small\mdseries\emph{SQL, Airflow, PyTorch/TensorFlow, Docker, Kubernetes, React, D3.js}}}
+    {May. 2025 – Aug. 2025}
+      {Quantara AI}{Remote}
+      \resumeItemListStart
+        \resumeItem{Cleaned 2M+ SQL records with pandas; standardized schemas and reduced rework from missing/invalid values in ETL jobs}
+        \resumeItem{Built Airflow ETL DAGs with validation, monitoring, and alerting to support reliable ML workflows downstream}
+        \resumeItem{Trained and evaluated NLP models in PyTorch/TensorFlow with tuning; improved validation score by 12\%}
+        \resumeItem{Deployed ML inference service via FastAPI, Docker, and Kubernetes for scalable batch predictions at scale}
+        \resumeItem{Built React and D3 dashboards for reporting, reducing manual updates and accelerating stakeholder review cycles}
+        
+      \resumeItemListEnd
+
+       \resumeSubheading
+        {Software Engineering Intern \textbar{} {\small\mdseries\emph{Angular, C\# .NET, Azure DevOps, Git, Postman, Swagger}}}
+        {May. 2024 -- Aug. 2024}
+      {Micron Technology}{Boise, ID}
+      \resumeItemListStart
+        \resumeItem{Built full stack Angular and C\# .NET application used by 200+ daily users, integrating 10+ REST endpoints}
+        \resumeItem{Implemented 12 REST APIs with Swagger/OpenAPI docs; validated through Postman, resolved 20+ defects in sprint QA}
+        \resumeItem{Improved Azure DevOps CI/CD by reducing manual release steps and standardizing build/test stages across repositories}
+        \resumeItem{Led UAT triage with stakeholders; resolved 50+ issues and clarified requirements to unblock sign-off for production}
+        \resumeItem{Delivered sprint features across US, Taiwan, and India teams, coordinating handoffs and validation in 2-week cycles} 
+
+      
+        %\resumeItem{Interned for the IT Manufacturing team}
+        %\resumeItem{Updated an existing API in a repository hosted on Azure DevOps using C\#}
+        %\resumeItem{Integrated the updated function with Swagger UI for improved documentation and testing capabilities}
+        %\resumeItem{Conducted local testing of the API with Postman, ensuring .NET and REST API standards compliance} 
+        %\resumeItem{Developed a full-stack API from scratch: front-end with AngularJS and back-end with C\#} 
+        %\resumeItem{Base layout of UI made using Angular Cli}
+        %\resumeItem{Worked with teams in Taiwan and India for the project}
+        %\resumeItem{Attended management training sessions led by board members and the CEO}
+      \resumeItemListEnd
+
+  \resumeSubheading
+      {Teaching Assistant \textbar{} {\small\mdseries\emph{Python, Tutoring}}}
+      {Jan. 2024 -- Present}
+      {University of Arizona}{Tucson, AZ}
+      \resumeItemListStart
+        \resumeItem{Led weekly lab sessions of 30+ students for CS 110, starting with lecture and hands-on Python programming tasks}
+        \resumeItem{Held 4 office hours weekly, graded quizzes/exams, and supported students with advanced Python coursework issues}
+      \resumeItemListEnd
+
+% -----------Multiple Positions Heading-----------
+%    \resumeSubSubheading
+%     {Software Engineer I}{Oct 2014 - Sep 2016}
+%     \resumeItemListStart
+%        \resumeItem{Apache Beam}
+%          {Apache Beam is a unified model for defining both batch and streaming data-parallel processing pipelines}
+%     \resumeItemListEnd
+%    \resumeSubHeadingListEnd
+%-------------------------------------------
+\resumeSubHeadingListEnd
+
+
+%-----------PROJECTS-----------
+% \section{Projects}
+%     \resumeSubHeadingListStart
+
+%         \resumeProjectHeading
+%   {\textbf{LearnPython iOS App} $|$ \emph{Swift, SwiftUI, Python, FastAPI, PostgreSQL}}{Jul. 2025 - Aug. 2025}
+%   \resumeItemListStart
+%     \resumeItem{Designed an interactive iOS learning platform for teaching Python syntax and concepts through embedded code execution}
+%     \resumeItem{Architected a SwiftUI MVVM iOS app embedding PythonKit for interactive Python lessons}
+%     \resumeItem{Integrated a CodeMirror-based editor in a WebView for syntax-highlighted code editing and real-time execution}
+%     \resumeItem{Built a FastAPI + PostgreSQL backend with JWT authentication and Pydantic models; configured GitHub Actions CI/CD}
+%   \resumeItemListEnd
+      
+%     \resumeProjectHeading
+%           {\textbf{Stock Trading Simulator} $|$ \emph{Java, SQL, Spring Boot, Spring Data JPA, WebSocket, Docker, AWS}}{Jun. 2025 - Jul. 2025}
+%           \resumeItemListStart
+%             \resumeItem{Built a stock-trading simulator for order placement, portfolio management, and real-time pricing}
+%             \resumeItem{Defined relational schema in SQL and implemented entities (User, Stock, Portfolio, Transaction) with Spring Data JPA}
+%             \resumeItem{Built an in-memory order-matching engine using Java \& Spring Boot}
+%             \resumeItem{Automated minute-level price updates from a public API and broadcast via STOMP/WebSocket}
+%             \resumeItem{Dockerized and deployed to AWS Elastic Beanstalk (RDS); secured with IAM/KMS; monitored via CloudWatch}
+%           \resumeItemListEnd
+          
+
+
+%     \resumeProjectHeading
+%           {\textbf{Full-Stack Sorting Algorithm Optimizer} $|$ \emph{Angular, C\#}}{Aug. 2024 - Oct. 2024}
+%           \resumeItemListStart
+%             \resumeItem{Developed a full-stack web application to analyze data and determine the most efficient sorting algorithm}
+%             \resumeItem{Front-end built with Angular for a dynamic and user-friendly interface}
+%             \resumeItem{Back-end implemented in C\# to decide and apply the optimal sorting algorithm based on the provided data}
+%             \resumeItem{Implemented multiple sorting algorithms (e.g., QuickSort, MergeSort, BubbleSort) for comparative analysis}
+%           \resumeItemListEnd
+
+%           \resumeProjectHeading
+%           {\textbf{Generative AI Word Search} $|$ \emph{Python}}{Mar. 2024 - Apr. 2024}
+%           \resumeItemListStart
+%             \resumeItem{Designed a classic crossword with a twist}
+%             \resumeItem{Player has to find a boss word that can only be known if AI generated riddle is solved, other words are found from word bank}
+%             \resumeItem{Worked with a team of 4 people to design the GUI and the backend of the game}h
+
+%             \resumeItem{ChatGPT API used for the AI genarated riddle}
+%           \resumeItemListEnd
+
+%         % \resumeProjectHeading
+%         %   {\textbf{Lyft Baywheels} $|$ \emph{SQL}}{Jun. 2023 -- Jul. 2023}
+%         %   \resumeItemListStart
+%         %     \resumeItem{Cleaned, analyzed and visualized data for Ford's GoBike and Lyft's Baywheels}
+%         %     \resumeItem{Made data-driven approaches to help Lyft do better than Ford's old program}
+%         %     \resumeItem{Provided feedback based off data to Lyft about how their users, both past and present, use their product}
+%         %   \resumeItemListEnd
+          
+%     \resumeSubHeadingListEnd
+
+%-----------PROJECTS-----------
+\section{Projects}
+  \resumeSubHeadingListStart
+
+\resumeProjectHeading
+    {\textbf{ClearView News Dashboard} $|$ \emph{Python, FastAPI, React, TypeScript}}{Feb. 2026 – Apr. 2026}
+    \resumeItemListStart
+      \resumeItem{Built full-stack news dashboard (FastAPI + React) aggregating headlines with bias labels, timestamps, and source links}
+      \resumeItem{Implemented NLP classification layer mapping political lean to articles via domain matching for scalable, automated labeling}
+      \resumeItem{Designed TF-IDF clustering pipeline grouping articles by topic to surface unique stories and reduce duplicate coverage}
+      \resumeItem{Engineered automated ingestion pipeline deduplicating articles from 8 outlets via NewsAPI on scheduled fetch cycles}
+    \resumeItemListEnd
+
+       \resumeProjectHeading
+    {\textbf{Stock Trading Simulator} $|$ \emph{Java, Spring Boot/JPA, SQL, React/Tailwind, WebSocket, Docker, AWS}}{Jun. 2025 – Jul. 2025}
+    \resumeItemListStart
+      \resumeItem{Built Spring Boot + WebSocket trade simulator with low-latency order execution and live portfolio streaming updates}
+      \resumeItem{Designed JPA schema for 5+ entities; added validation, error paths, and transaction-safe order flows across services}
+      \resumeItem{Integrated Alpha Vantage pricing with scheduled refresh, retries, and rate-limit handling to stabilize price updates}
+      \resumeItem{Built React + Tailwind dashboard with charts and trade flows; streamed state updates without full page reloads}
+      \resumeItem{Deployed Docker services to AWS EC2 + RDS; added CloudWatch logs/metrics to support debugging, monitoring and alerts}
+      \resumeItem{Engineered trading signals using moving averages and regression based indicators on live streaming price data}
+    \resumeItemListEnd
+    
+  \resumeProjectHeading
+    {\textbf{LearnPython iOS App} $|$ \emph{Swift, SwiftUI, Python, FastAPI, PostgreSQL}}{Jul. 2025 – Aug. 2025}
+    \resumeItemListStart
+      \resumeItem{Built SwiftUI app with interactive Python labs, syntax highlighting, and timed execution limits for code submissions}
+      \resumeItem{Implemented MVVM to persist progress across 3 levels and 5 categories, greatly improving continuity between sessions}
+      \resumeItem{Embedded CodeMirror via WebView and connected code execution to FastAPI backend for executions and progress tracking}
+      \resumeItem{Built 6+ FastAPI endpoints with PostgreSQL and JWT auth to manage users, submissions, and progress datasets reliably}
+      \resumeItem{Added GitHub Actions CI to run tests and checks across multiple OS runners, reducing regression likelihood on merges}
+    \resumeItemListEnd
+
+
+
+  \resumeProjectHeading
+    {\textbf{Full-Stack Sorting Algorithm Optimizer} $|$ \emph{Angular, TypeScript, C\#, ASP.NET Core}}{Aug. 2024 – Oct. 2024}
+    \resumeItemListStart
+      \resumeItem{Benchmarked sorting on datasets 1M+ records, recommending optimal algorithms based on distribution characteristics}
+      \resumeItem{Implemented a dynamic Angular front-end for user-friendly dataset upload, visualization, and sorting controls}
+      \resumeItem{Built a C\# back-end service capturing algorithm timings at 10 ms intervals across 4+ sorting methods}
+      \resumeItem{Demonstrated a 40\% reduction in average sort time versus baseline by dynamically selecting algorithms per dataset profile}
+    \resumeItemListEnd
+
+  
+
+  \resumeSubHeadingListEnd
+
+
+%-------------------------------------------
+
+\end{document}

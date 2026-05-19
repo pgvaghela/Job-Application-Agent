@@ -1,0 +1,212 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,10pt]{article}
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+
+\begin{document}
+
+\begin{center}
+    \textbf{\Huge \scshape Priyanshsinh Vaghela} \\ \vspace{1pt}
+    \small Phone: (208)-366-9658 $|$ \href{mailto:pgvaghela20@gmail.com}{\underline{Email: pgvaghela20@gmail.com}} $|$
+    \href{https://github.com/pgvaghela}{\underline{github.com/pgvaghela}} $|$
+    \href{https://www.linkedin.com/in/priyanshvaghela/}{\underline{linkedin.com/priyanshvaghela}} \\
+    \small No sponsorship required (Green Card)
+\end{center}
+
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {University of Arizona}{Tucson, AZ}
+      {B.S. in Computer Science, Minors: Entrepreneurship \& Innovation, Info Sci \& Tech}{Aug. 2022 -- May 2026}
+      \resumeItemListStart
+      \resumeItem{\textbf{Awards:} Dean's List (Fall 2025, Spring 2026); Academic Distinction (2025--2026)}
+      \resumeItem{\textbf{Relevant Courses:} Object-Oriented Programming, Systems Programming, Data Structures, Algorithms, Machine Learning}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%-----------SKILLS-----------
+  \vspace{-18pt}
+
+\section{Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item
+     \textbf{Programming Languages}{: Python, TypeScript, JavaScript, Java, C\# (.NET), C++, C, Swift, SQL, HTML/CSS} \\
+     \textbf{Frameworks \& Libraries}{: React, FastAPI, Spring Boot, Angular, ASP.NET Core, Tailwind, PyTorch} \\
+     \textbf{Data \& Telemetry}{: PostgreSQL, MySQL, pandas, NumPy, scikit-learn, TF-IDF, data pipelines} \\
+     \textbf{Cloud \& DevOps}{: AWS (EC2, RDS, S3, CloudWatch), Docker, Azure DevOps, GitHub Actions, Git, Linux/Unix} \\
+     \textbf{Testing \& CI/CD}{: Unit Testing (Jest, JUnit, PyTest), Integration Testing, Postman, CI/CD (GitHub Actions, Azure Pipelines)} \\
+     \textbf{Methodologies \& Design}{: Agile/Scrum, SAFe, SDLC, RESTful API design, design patterns} \\
+    }
+\end{itemize}
+
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+      \resumeSubheading
+      {AI/Data Analyst Intern \textbar{} {\small\mdseries\emph{Python, PyTorch, pandas, boto3, Paramiko, AWS S3, Gemini API}}}
+    {May. 2025 -- Aug. 2025}
+      {Quantara AI}{Remote}
+      \resumeItemListStart
+        \resumeItem{Built zero-disk SFTP-to-S3 ingestion streaming 2M+ rows of Zywave cyber-risk data through BytesIO without local writes}
+        \resumeItem{Engineered resilient CSV parser handling malformed rows, mixed delimiters, and encoding failures in vendor feeds}
+        \resumeItem{Shipped Gemini labeling script tagging vulnerability descriptions with loss type and MITRE ATT\&CK techniques}
+        \resumeItem{Added row-level checkpointing and 60s retry-on-rate-limit so multi-hour Gemini jobs resume from last row on failure}
+        \resumeItem{Trained PyTorch embedding-pool classifier on 6-class loss-type labels with class weighting to handle long-tail imbalance}
+        \resumeItem{Generated 1,400+ row synthetic training set across AWS Inspector, CrowdStrike, Tenable, and Sentinel schemas}
+      \resumeItemListEnd
+
+       \resumeSubheading
+        {Software Engineering Intern \textbar{} {\small\mdseries\emph{Angular, C\# .NET, Azure DevOps, Git, Postman, Swagger}}}
+        {May. 2024 -- Aug. 2024}
+      {Micron Technology}{Boise, ID}
+      \resumeItemListStart
+        \resumeItem{Built full stack Angular and C\# .NET application used by 200+ daily users, integrating 10+ REST endpoints}
+        \resumeItem{Implemented 12 REST APIs with Swagger/OpenAPI docs; validated through Postman, resolved 20+ defects in sprint QA}
+        \resumeItem{Led UAT triage with stakeholders; resolved 50+ issues and clarified requirements to unblock sign-off for production}
+        \resumeItem{Delivered sprint features across US, Taiwan, and India teams, coordinating handoffs and validation in 2-week cycles}
+      \resumeItemListEnd
+
+  \resumeSubheading
+      {Teaching Assistant \textbar{} {\small\mdseries\emph{Python, Tutoring}}}
+      {Jan. 2024 -- Dec. 2025}
+      {University of Arizona}{Tucson, AZ}
+      \resumeItemListStart
+        \resumeItem{Led weekly CS 110 lab sessions of 30+ students, combining short lectures with hands-on Python programming exercises}
+        \resumeItem{Held 4 office hours weekly, graded quizzes and exams, and debugged students' Python code one-on-one during sessions}
+      \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+
+%-----------PROJECTS-----------
+\section{Projects}
+  \resumeSubHeadingListStart
+
+       \resumeProjectHeading
+    {\textbf{Job Application Agent} $|$ \emph{Python, FastAPI, Claude API, React, TypeScript, PostgreSQL, Docker}}{Apr. 2026 -- May 2026}
+    \resumeItemListStart
+      \resumeItem{Built agentic loop with Claude API tool use, web search, and iterative refinement over resume and cover letter drafts}
+      \resumeItem{Cut per-iteration token cost 90\% via prompt caching on system prompt and tool definitions across multi-turn agent loops}
+      \resumeItem{Added pgvector RAG over resume, projects, and past writing; agent retrieves top-k chunks per JD via cosine similarity}
+      \resumeItem{Wrapped sync web search in run\_in\_executor to keep FastAPI's async event loop unblocked during agent tool calls}
+      \resumeItem{Built React + TypeScript replay dashboard with Overview, Resume Diff, Cover Letter, and Agent Trace tabs for debugging}
+    \resumeItemListEnd
+
+       \resumeProjectHeading
+    {\textbf{Sorting Algorithm Optimizer} $|$ \emph{Angular, TypeScript, C\#, ASP.NET Core}}{Aug. 2024 -- Oct. 2024}
+    \resumeItemListStart
+      \resumeItem{Benchmarked 4+ sorting algorithms on 1M+ record datasets, recommending optimal choice per data distribution profile}
+      \resumeItem{Built C\# ASP.NET Core service capturing algorithm timings at 10ms intervals across varied input distributions}
+      \resumeItem{Cut average sort time 40\% versus single-algorithm baseline by dynamically selecting algorithm based on dataset features}
+      \resumeItem{Designed Angular frontend for dataset upload, live visualization of comparison passes, and algorithm selection controls}
+    \resumeItemListEnd
+
+       \resumeProjectHeading
+    {\textbf{Stock Trading Simulator} $|$ \emph{Java, Spring Boot/JPA, SQL, WebSocket, React, Docker, AWS}}{Jun. 2025 -- Jul. 2025}
+    \resumeItemListStart
+      \resumeItem{Built Spring Boot + WebSocket trade simulator pushing live portfolio updates to React dashboard on every order}
+      \resumeItem{Designed JPA schema for 5+ entities with transaction-safe order flows, validation, and error paths across services}
+      \resumeItem{Integrated Alpha Vantage for 30+ tickers with scheduled refresh, retries, and rate-limit backoff to handle API throttling}
+      \resumeItem{Deployed Dockerized services to AWS EC2 and RDS with CloudWatch logs and metrics for monitoring and alerting}
+    \resumeItemListEnd
+
+\resumeProjectHeading
+    {\textbf{ClearView News Dashboard} $|$ \emph{Python, FastAPI, React, TypeScript, PostgreSQL}}{Feb. 2026 -- Apr. 2026}
+    \resumeItemListStart
+      \resumeItem{Built full-stack dashboard (FastAPI + React/TS) aggregating 50-100 daily articles with bias labels and source links}
+      \resumeItem{Engineered ingestion pipeline pulling \textasciitilde75 articles/day from 8 outlets via NewsAPI with cross-source deduplication}
+      \resumeItem{Designed TF-IDF clustering pipeline grouping articles by topic so the same story across outlets shows as one cluster}
+    \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+
+%-------------------------------------------
+
+\end{document}
