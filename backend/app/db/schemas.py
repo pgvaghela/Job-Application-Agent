@@ -35,6 +35,7 @@ class ApplicationDetail(BaseModel):
     original_resume: str | None
     rewritten_bullets: list[dict]
     cover_letter: str | None
+    suggested_additions: list[dict] = []
     agent_steps: list[dict]
     has_pdf: bool = False
 

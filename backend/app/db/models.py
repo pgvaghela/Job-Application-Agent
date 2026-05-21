@@ -44,6 +44,9 @@ class Application(Base):
     # Modified LaTeX resume (populated after agent run if original was .tex)
     modified_resume_tex: Mapped[str | None] = mapped_column(Text)
 
+    # Corpus items not on the resume that are relevant to this role
+    suggested_additions: Mapped[list[Any]] = mapped_column(JSONB, default=list)
+
     # Agent execution trace
     agent_steps: Mapped[list[Any]] = mapped_column(JSONB, default=list)
 
@@ -83,7 +86,7 @@ class CorpusChunk(Base):
     )
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    embedding: Mapped[list[float] | None] = mapped_column(Vector(3072))
+    embedding: Mapped[list[float] | None] = mapped_column(Vector(768))
     token_count: Mapped[int] = mapped_column(Integer, nullable=False)
     document: Mapped["CorpusDocument"] = relationship(
         "CorpusDocument", back_populates="chunks"

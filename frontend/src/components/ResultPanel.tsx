@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
-import type { AgentStep, ApplicationDetail, AnalyzeResponse } from "../types";
+import type { AgentStep, ApplicationDetail, AnalyzeResponse, SuggestedAddition } from "../types";
 import { AgentSteps } from "./AgentSteps";
 
 async function downloadPdf(applicationId: string): Promise<string | null> {
@@ -51,7 +51,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export function ResultPanel({ result }: Props) {
   const [detail, setDetail] = useState<ApplicationDetail | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "bullets" | "cover" | "trace">(
+  const [activeTab, setActiveTab] = useState<"overview" | "bullets" | "cover" | "discoveries" | "trace">(
     "overview"
   );
   const [pdfError, setPdfError] = useState<string | null>(null);
@@ -110,7 +110,7 @@ export function ResultPanel({ result }: Props) {
       {/* Tabs */}
       <div className="border-b border-gray-200">
         <nav className="-mb-px flex gap-6">
-          {(["overview", "bullets", "cover", "trace"] as const).map((tab) => (
+          {(["overview", "bullets", "cover", "discoveries", "trace"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -120,7 +120,15 @@ export function ResultPanel({ result }: Props) {
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              {tab === "bullets" ? "Resume Bullets" : tab === "cover" ? "Cover Letter" : tab === "trace" ? "Agent Trace" : "Overview"}
+              {tab === "bullets"
+                ? "Resume Bullets"
+                : tab === "cover"
+                  ? "Cover Letter"
+                  : tab === "discoveries"
+                    ? `Discoveries${detail && detail.suggested_additions.length > 0 ? ` (${detail.suggested_additions.length})` : ""}`
+                    : tab === "trace"
+                      ? "Agent Trace"
+                      : "Overview"}
             </button>
           ))}
         </nav>
@@ -193,6 +201,48 @@ export function ResultPanel({ result }: Props) {
             Copy to clipboard
           </button>
         </Section>
+      )}
+
+      {activeTab === "discoveries" && detail && (
+        <div className="space-y-4">
+          {detail.suggested_additions.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <p className="text-sm">No hidden gems found.</p>
+              <p className="text-xs mt-1 text-gray-400">The agent found your resume already covers the most relevant experience for this role.</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm text-gray-600 bg-indigo-50 border border-indigo-100 rounded-lg px-4 py-3">
+                The agent found these experiences in your career corpus that aren't on your current resume. Consider adding them before applying.
+              </p>
+              {detail.suggested_additions.map((item: SuggestedAddition, i: number) => (
+                <div key={i} className="border border-indigo-200 rounded-lg overflow-hidden">
+                  <div className="bg-indigo-50 px-4 py-2 flex items-center gap-2 border-b border-indigo-100">
+                    <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wide bg-indigo-100 px-2 py-0.5 rounded">
+                      {item.source_type}
+                    </span>
+                    <span className="font-medium text-gray-800 text-sm">{item.title}</span>
+                  </div>
+                  <div className="px-4 py-3 space-y-2">
+                    <p className="text-sm text-gray-800 font-medium">{item.text}</p>
+                    <p className="text-xs text-gray-500">
+                      <span className="font-medium text-gray-600">Why relevant: </span>
+                      {item.reason}
+                    </p>
+                  </div>
+                  <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                    <button
+                      onClick={() => navigator.clipboard.writeText(item.text)}
+                      className="text-xs text-indigo-600 hover:underline"
+                    >
+                      Copy bullet
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
       )}
 
       {activeTab === "trace" && (

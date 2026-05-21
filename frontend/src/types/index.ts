@@ -4,6 +4,13 @@ export interface RewrittenBullet {
   reason: string;
 }
 
+export interface SuggestedAddition {
+  title: string;
+  source_type: string;
+  text: string;
+  reason: string;
+}
+
 export interface AgentStep {
   iteration: number;
   type: "tool_call" | "tool_result" | "thought";
@@ -33,6 +40,7 @@ export interface ApplicationDetail {
   original_resume: string | null;
   rewritten_bullets: RewrittenBullet[];
   cover_letter: string | null;
+  suggested_additions: SuggestedAddition[];
   agent_steps: AgentStep[];
   has_pdf: boolean;
 }

@@ -1,29 +1,55 @@
 """
-Core agent loop.
+Core agent loop — google-genai (Vertex AI) edition.
 
 Architecture:
-  1. Build initial user message with JD + instructions
-  2. Call Claude (claude-opus-4-7) with tool definitions + system prompt
-  3. If Claude returns tool_use blocks → execute each tool → feed results back
-  4. Repeat until stop_reason == "end_turn"
+  1. Build initial user message with JD + pre-retrieved corpus context
+  2. Call Gemini via Vertex AI with tool declarations + system instruction
+  3. If response contains function_call parts → execute each tool → feed results back
+  4. Repeat until response contains no function calls (natural end_turn)
   5. Return structured result
-
-Prompt caching:
-  - System prompt has cache_control → caches the system block
-  - Last tool definition has cache_control → caches the entire tools prefix
-  - Both are stable across iterations, so every tool-execution turn hits the cache
 """
 
+import asyncio
 import json
+import re
 from dataclasses import dataclass, field
 
-import anthropic
+from google import genai
+from google.genai import errors as genai_errors
+from google.genai import types
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agent.prompts import SYSTEM_PROMPT
-from app.agent.tools import TOOL_DEFINITIONS, execute_tool
+from app.agent.tools import GENAI_TOOLS, execute_tool
 from app.core.config import settings
 from app.rag.retriever import retrieve
+
+
+def _make_client() -> genai.Client:
+    return genai.Client(
+        vertexai=True,
+        project=settings.gcp_project,
+        location=settings.gcp_location,
+    )
+
+
+async def _generate_with_retry(client, model, contents, config, max_attempts: int = 5):
+    """Call generate_content with exponential backoff on 429 quota errors."""
+    for attempt in range(max_attempts):
+        try:
+            return await client.aio.models.generate_content(
+                model=model,
+                contents=contents,
+                config=config,
+            )
+        except genai_errors.ClientError as exc:
+            if getattr(exc, "code", None) != 429:
+                raise
+            if attempt == max_attempts - 1:
+                raise
+            match = re.search(r"seconds:\s*(\d+)", str(exc))
+            wait = int(match.group(1)) if match else (2 ** attempt) * 10
+            await asyncio.sleep(wait)
 
 
 @dataclass
@@ -38,13 +64,8 @@ async def run_agent(
     user_id: str,
     db: AsyncSession,
 ) -> AgentResult:
-    """
-    Run the job application agent.
-    Returns a structured result after the agent finishes its reasoning loop.
-    """
-    client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
+    client = _make_client()
 
-    # Context shared across tool calls within this session
     context: dict = {
         "db": db,
         "user_id": user_id,
@@ -54,18 +75,17 @@ async def run_agent(
     }
 
     # Seed the conversation with an initial retrieval using the full JD as the query.
-    # This surfaces the most relevant experience before Claude makes a single tool call,
-    # keeping the system prompt cache clean (no dynamic content there).
     initial_chunks_text = ""
     try:
         initial_chunks = await retrieve(job_description, db, k=5)
         if initial_chunks:
-            lines = ["Relevant experience retrieved from your corpus:\n"]
+            lines = ["Relevant career corpus chunks retrieved for this JD:\n"]
             for i, chunk in enumerate(initial_chunks, 1):
-                source_name = chunk.source_path.rsplit("/", 1)[-1]
+                meta = chunk.metadata or {}
+                title = meta.get("title") or chunk.source_path.rsplit("/", 1)[-1]
                 lines.append(
-                    f"[{i}] {chunk.source_type}/{source_name} "
-                    f"(chunk {chunk.chunk_index}, distance {chunk.distance:.3f})"
+                    f"[{i}] {chunk.source_type}: {title} "
+                    f"(chunk {chunk.chunk_index}, similarity {1 - chunk.distance:.2f})"
                 )
                 lines.append(chunk.content)
                 lines.append("")
@@ -89,110 +109,101 @@ async def run_agent(
                 }
             )
     except Exception as exc:
-        # Corpus may be empty or Gemini key not set — degrade gracefully.
         context["agent_steps"].append(
             {"iteration": 0, "type": "rag_retrieval_error", "error": str(exc)}
         )
 
-    # System prompt with cache_control so it (and the tools prefix) is cached
-    system = [
-        {
-            "type": "text",
-            "text": SYSTEM_PROMPT,
-            "cache_control": {"type": "ephemeral"},
-        }
-    ]
+    gen_config = types.GenerateContentConfig(
+        system_instruction=SYSTEM_PROMPT,
+        tools=GENAI_TOOLS,
+        max_output_tokens=settings.agent_max_tokens,
+    )
 
-    messages = [
-        {
-            "role": "user",
-            "content": _build_initial_message(job_description, user_id, initial_chunks_text),
-        }
+    messages: list[types.Content] = [
+        types.Content(
+            role="user",
+            parts=[types.Part(text=_build_initial_message(job_description, user_id, initial_chunks_text))],
+        )
     ]
 
     final_text = ""
     application_id: str | None = None
 
     for iteration in range(settings.agent_max_iterations):
-        response = await client.messages.create(
+        response = await _generate_with_retry(
+            client,
             model=settings.agent_model,
-            max_tokens=settings.agent_max_tokens,
-            thinking={"type": "adaptive"},
-            system=system,
-            tools=TOOL_DEFINITIONS,
-            messages=messages,
+            contents=messages,
+            config=gen_config,
         )
 
-        # Append the full assistant response (preserves tool_use + thinking blocks)
-        messages.append({"role": "assistant", "content": response.content})
+        # Append the full model turn to history
+        messages.append(response.candidates[0].content)
 
-        # Log each content block for the UI
-        for block in response.content:
-            if block.type == "tool_use":
-                step = {
-                    "iteration": iteration + 1,
-                    "type": "tool_call",
-                    "tool": block.name,
-                    "input": block.input,
-                }
-                context["agent_steps"].append(step)
-            elif block.type == "text" and block.text.strip():
+        # Collect function calls from this turn
+        fn_calls = []
+        for part in response.candidates[0].content.parts:
+            fn_call = part.function_call
+            if fn_call and fn_call.name:
+                fn_calls.append(fn_call)
+                context["agent_steps"].append(
+                    {
+                        "iteration": iteration + 1,
+                        "type": "tool_call",
+                        "tool": fn_call.name,
+                        "input": dict(fn_call.args),
+                    }
+                )
+            elif part.text and part.text.strip():
                 context["agent_steps"].append(
                     {
                         "iteration": iteration + 1,
                         "type": "thought",
-                        "text": block.text[:300],  # truncate for storage
+                        "text": part.text[:300],
                     }
                 )
 
-        # ── Natural completion ──────────────────────────────────────────────
-        if response.stop_reason == "end_turn":
-            for block in response.content:
-                if block.type == "text":
-                    final_text += block.text
+        # Natural completion — no function calls in this turn
+        if not fn_calls:
+            try:
+                final_text = response.text or ""
+            except Exception:
+                text_parts = [p.text for p in response.candidates[0].content.parts if p.text]
+                final_text = "\n".join(text_parts)
             break
 
-        # ── Tool use ────────────────────────────────────────────────────────
-        if response.stop_reason == "tool_use":
-            tool_results = []
+        # Execute tools and build function response parts
+        tool_parts = []
+        for fn_call in fn_calls:
+            tool_name = fn_call.name
+            tool_args = dict(fn_call.args)
 
-            for block in response.content:
-                if block.type != "tool_use":
-                    continue
+            result_text = await execute_tool(tool_name, tool_args, context)
 
-                result_text = await execute_tool(block.name, block.input, context)
+            if tool_name == "save_application":
+                try:
+                    parsed = json.loads(result_text)
+                    application_id = parsed.get("application_id")
+                except (json.JSONDecodeError, AttributeError):
+                    pass
 
-                # Extract application_id if this was the save call
-                if block.name == "save_application":
-                    try:
-                        parsed = json.loads(result_text)
-                        application_id = parsed.get("application_id")
-                    except (json.JSONDecodeError, AttributeError):
-                        pass
+            context["agent_steps"].append(
+                {
+                    "iteration": iteration + 1,
+                    "type": "tool_result",
+                    "tool": tool_name,
+                    "result_preview": result_text[:400] + ("…" if len(result_text) > 400 else ""),
+                }
+            )
 
-                context["agent_steps"].append(
-                    {
-                        "iteration": iteration + 1,
-                        "type": "tool_result",
-                        "tool": block.name,
-                        # Truncate long results (resume text, search results) for the log
-                        "result_preview": result_text[:400] + ("…" if len(result_text) > 400 else ""),
-                    }
+            tool_parts.append(
+                types.Part.from_function_response(
+                    name=tool_name,
+                    response={"output": result_text},
                 )
+            )
 
-                tool_results.append(
-                    {
-                        "type": "tool_result",
-                        "tool_use_id": block.id,
-                        "content": result_text,
-                    }
-                )
-
-            messages.append({"role": "user", "content": tool_results})
-            continue
-
-        # Unexpected stop reason — break to avoid infinite loop
-        break
+        messages.append(types.Content(role="user", parts=tool_parts))
 
     return AgentResult(
         application_id=application_id,
@@ -209,12 +220,12 @@ def _build_initial_message(
     context_section = ""
     if initial_context:
         context_section = f"""
-**Pre-retrieved Relevant Experience**:
+**Initial corpus retrieval** (broad JD query — 5 most relevant chunks):
 ---
 {initial_context}
 ---
-The above was retrieved semantically from your corpus. Use `retrieve_relevant_experience` \
-for targeted follow-up queries on specific skills or domains.
+This is a starting point. Call `list_corpus_sources` to see the full career inventory, \
+then use `retrieve_relevant_experience` for targeted follow-up queries.
 
 """
 
@@ -227,13 +238,15 @@ for targeted follow-up queries on specific skills or domains.
 {job_description}
 ---
 {context_section}
-Please:
-1. Research this company thoroughly (culture, tech stack, recent news)
-2. Analyze the JD against my background — identify skill gaps and keyword matches
-3. Use `retrieve_relevant_experience` for any specific skills or domains you need more evidence on
-4. Rewrite the 3-5 most relevant resume bullets to better align with this role
-5. Draft a tailored cover letter for this specific company and position
-6. Save the complete analysis to the database
-7. Give me an honest summary with your top recommendations
+Follow the strategy in your system prompt:
+1. Explore my career corpus (`list_corpus_sources`, then targeted `retrieve_relevant_experience` calls)
+2. Read my current resume to see what I already present to employers
+3. Research the company (culture, tech stack, recent news)
+4. Identify skill gaps and keyword matches
+5. Rewrite the 3-5 most impactful resume bullets
+6. Surface hidden gems — corpus items not on my resume that are relevant to this role
+7. Draft a tailored cover letter for this specific company and position
+8. Save the complete analysis
+9. Give me an honest, actionable summary
 
-Be specific and actionable. I want to know exactly what to highlight and what to work on."""
+Be specific. I want to know exactly what to highlight, what to add, and what to work on."""

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,16 +21,21 @@ class RetrievedChunk:
     source_path: str
     token_count: int
     distance: float  # cosine distance via <=>; lower = more similar
+    metadata: dict = field(default_factory=dict)
 
 
 def _embed_query(query: str) -> list[float]:
-    genai.configure(api_key=settings.gemini_api_key)
-    result = genai.embed_content(
-        model="models/gemini-embedding-001",
-        content=query,
-        task_type="RETRIEVAL_QUERY",
+    client = genai.Client(
+        vertexai=True,
+        project=settings.gcp_project,
+        location=settings.gcp_location,
     )
-    return result["embedding"]
+    result = client.models.embed_content(
+        model="text-embedding-004",
+        contents=[query],
+        config=types.EmbedContentConfig(task_type="RETRIEVAL_QUERY"),
+    )
+    return list(result.embeddings[0].values)
 
 
 async def retrieve(
@@ -39,8 +45,7 @@ async def retrieve(
     source_types: list[str] | None = None,
 ) -> list[RetrievedChunk]:
     """
-    Embed query with RETRIEVAL_QUERY task type, then run cosine similarity
-    search against corpus_chunks using the pgvector <=> operator.
+    Embed query then run cosine similarity search via pgvector <=> operator.
     """
     k = max(1, min(k, 50))
 
@@ -48,8 +53,6 @@ async def retrieve(
         None, lambda: _embed_query(query)
     )
 
-    # Safe interpolation: embedding is list[float] from Gemini, k is a bounded int.
-    # Using a string literal avoids asyncpg vector-type registration complexity.
     vec_literal = "[" + ",".join(map(str, embedding)) + "]"
 
     type_clause = ""
@@ -69,6 +72,7 @@ async def retrieve(
             d.source_type,
             d.source_path,
             c.token_count,
+            d.metadata,
             (c.embedding <=> '{vec_literal}'::vector) AS distance
         FROM corpus_chunks c
         JOIN corpus_documents d ON d.id = c.document_id
@@ -92,6 +96,7 @@ async def retrieve(
             source_path=row["source_path"],
             token_count=row["token_count"],
             distance=float(row["distance"]),
+            metadata=dict(row["metadata"]) if row["metadata"] else {},
         )
         for row in rows
     ]

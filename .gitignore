@@ -1,6 +1,7 @@
 .env
 .claude/
-backend/resumes/default.pdf
+backend/resumes/
+backend/service-account.json
 __pycache__/
 *.pyc
 *.pyo

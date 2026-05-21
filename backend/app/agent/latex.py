@@ -1,10 +1,11 @@
 """
-Single-turn Claude call that substitutes rewritten bullets back into the
+Single-turn Vertex AI call that substitutes rewritten bullets back into the
 original LaTeX source. Not part of the agentic loop — runs after the agent
 completes, only when the uploaded resume was a .tex file.
 """
 
-import anthropic
+from google import genai
+from google.genai import types
 
 from app.core.config import settings
 
@@ -26,7 +27,11 @@ async def generate_modified_tex(original_tex: str, rewritten_bullets: list[dict]
     Takes the original LaTeX resume and the agent's rewritten bullets,
     returns a modified LaTeX with the bullets substituted in-place.
     """
-    client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
+    client = genai.Client(
+        vertexai=True,
+        project=settings.gcp_project,
+        location=settings.gcp_location,
+    )
 
     bullets_block = "\n\n".join(
         f"ORIGINAL TEXT (the text inside the LaTeX command, not the command itself):\n{b['original']}\n\n"
@@ -34,13 +39,7 @@ async def generate_modified_tex(original_tex: str, rewritten_bullets: list[dict]
         for b in rewritten_bullets
     )
 
-    response = await client.messages.create(
-        model=settings.agent_model,
-        max_tokens=8192,
-        messages=[
-            {
-                "role": "user",
-                "content": f"""You will modify a LaTeX resume by substituting rewritten bullet text.
+    prompt = f"""You will modify a LaTeX resume by substituting rewritten bullet text.
 
 CRITICAL RULES — violations will break the PDF:
 1. Only change the human-readable text of the bullets. Never add, remove, or move any LaTeX commands, braces, brackets, or special characters.
@@ -56,14 +55,17 @@ ORIGINAL LATEX:
 {original_tex}
 
 BULLETS TO SUBSTITUTE:
-{bullets_block}""",
-            }
-        ],
+{bullets_block}"""
+
+    response = await client.aio.models.generate_content(
+        model=settings.agent_model,
+        contents=prompt,
+        config=types.GenerateContentConfig(max_output_tokens=8192),
     )
 
-    result = response.content[0].text.strip()
+    result = response.text.strip()
 
-    # Strip markdown fences if Claude wrapped the output anyway
+    # Strip markdown fences if the model wrapped the output anyway
     if result.startswith("```"):
         lines = result.split("\n")
         result = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
